@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import json,urllib2,time,datetime
-
-config = {"hostname":"127.0.0.1","port":"4985","sgDb":"sync_gateway","secure":False,"debug":True}
+from time import sleep
+config = {"hostname":"127.0.0.1","port":"4984","sgDb":"data","secure":False,"debug":True}
 
 class WORK():
 
@@ -36,9 +36,11 @@ class WORK():
 					print "Error: HTTP GET: " + str(e.code)
 			if retry == 3:
 				if self.debug == True:
-					print "DEBUG: Tried 3 times could execute: GET"				
+					print "DEBUG: Tried 3 times could not execute: GET"				
 				if e:
 					if hasattr(e, 'code'):
+						if self.debug == True:
+							print "DEBUG: HTTP CODE ON: GET - "+ str(e.code)	
 						return e.code
 					else:
 						return False
@@ -57,12 +59,15 @@ class WORK():
 					print "Error: HTTP PUT: " + str(e.code)
 			if retry == 3:
 				if self.debug == True:
-					print "DEBUG: Tried 3 times could execute: PUT"				
+					print "DEBUG: Tried 3 times could not execute: PUT"				
 				if e:
 					if hasattr(e, 'code'):
+						if self.debug == True:
+							print "DEBUG: HTTP CODE ON: PUT - "+ str(e.code)	
 						return e.code
 					else:
 						return False
+			sleep(0.02)
 			return self.httpPut(url,data,retry+1)
 
 	def httpPost(self,url='',data={},retry=0):
@@ -78,13 +83,16 @@ class WORK():
 					print "Error: HTTP POST: " + str(e.code)
 			if retry == 3:
 				if self.debug == True:
-					print "DEBUG: Tried 3 times could execute: POST"				
+					print "DEBUG: Tried 3 times could not execute: POST"				
 				if e:
 					if hasattr(e, 'code'):
+						if self.debug == True:
+							print "DEBUG: HTTP CODE ON: POST - "+ str(e.code)	
 						return e.code
 					else:
 						return False
-			return self.httpPut(url,data,retry+1)
+			sleep(0.05)
+			return self.httpPost(url,data,retry+1)
 		
 	def httpDelete(self,url='',retry=0):
 		try:
@@ -98,12 +106,17 @@ class WORK():
 					print "Error: HTTP DELETE: " + str(e.code)
 			if retry == 3:
 				if self.debug == True:
-					print "DEBUG: Tried 3 times could execute: DELETE"				
+					print "DEBUG: Tried 3 times could not execute: DELETE"				
 				if e:
 					if hasattr(e, 'code'):
+						if self.debug == True:
+							print "DEBUG: HTTP CODE ON: DELETE - "+ str(e.code)
+						#quit()	
 						return e.code
 					else:
+						#quit()
 						return False
+			sleep(0.05)
 			return self.httpDelete(url,retry+1)
 
 	def jsonChecker(self, data=''):
@@ -158,12 +171,12 @@ class WORK():
 				print "DEBUG: Winner:"+" DocId: "+doc_id+":"+str(winner)
 				print "DEBUG: Losers:"+" DocId: "+doc_id+":"+str(losers)
 
-		if losers.__len__ == 1: # if only one loser just do simple DELETE
-			url = self.secure +'://'+self.hostname+":"+self.port+"/"+self.sgDb+"/"+doc_id+"?rev="+x["rev"]
+		if losers.__len__() == 1: # if only one loser just do simple DELETE
+			url = self.secure +'://'+self.hostname+":"+self.port+"/"+self.sgDb+"/"+doc_id+"?rev="+losers[0]["rev"]
 			if self.debug == True:
 				print "DEBUG: Doc To Delete: "+url
 			self.httpDelete(url) 
-		elif losers.__len__ > 1: # if two or more loser do bulk_docs i.e.(POST)
+		elif losers.__len__() > 1: # if two or more loser do bulk_docs i.e.(POST)
 			send_json = {};
 			send_json["new_edits"] = True
 			send_json["docs"] = []
