@@ -44,6 +44,7 @@ class WORK():
 						return e.code
 					else:
 						return False
+			sleep(0.02)
 			return self.httpGet(url,retry+1)
 	
 	def httpPut(self,url='',data={},retry=0):
@@ -91,7 +92,7 @@ class WORK():
 						return e.code
 					else:
 						return False
-			sleep(0.05)
+			sleep(0.02)
 			return self.httpPost(url,data,retry+1)
 		
 	def httpDelete(self,url='',retry=0):
@@ -111,12 +112,10 @@ class WORK():
 					if hasattr(e, 'code'):
 						if self.debug == True:
 							print "DEBUG: HTTP CODE ON: DELETE - "+ str(e.code)
-						#quit()	
 						return e.code
 					else:
-						#quit()
 						return False
-			sleep(0.05)
+			#sleep(0.05)
 			return self.httpDelete(url,retry+1)
 
 	def jsonChecker(self, data=''):
@@ -171,11 +170,14 @@ class WORK():
 				print "DEBUG: Winner:"+" DocId: "+doc_id+":"+str(winner)
 				print "DEBUG: Losers:"+" DocId: "+doc_id+":"+str(losers)
 
-		if losers.__len__() == 1: # if only one loser just do simple DELETE
+		if losers.__len__() == 1 : # if only one loser just do simple DELETE
+
 			url = self.secure +'://'+self.hostname+":"+self.port+"/"+self.sgDb+"/"+doc_id+"?rev="+losers[0]["rev"]
 			if self.debug == True:
 				print "DEBUG: Doc To Delete: "+url
-			self.httpDelete(url) 
+			sleep(0.02)
+			return self.httpDelete(url) 
+		
 		elif losers.__len__() > 1: # if two or more loser do bulk_docs i.e.(POST)
 			send_json = {};
 			send_json["new_edits"] = True
@@ -190,9 +192,11 @@ class WORK():
 			data = json.dumps(send_json)
 			if self.debug == True:
 				print "DEBUG: Bulk Docs Url: "+url
-				print "DEBUG: Bulk Docs Data: "+ data
+				#print "DEBUG: Bulk Docs Data: "+ data
+			#sleep(0.05)
 			self.httpPost(url,data)
 
+		
 	#------END OF CLASS WORK -------#
 
 if __name__ == "__main__":
