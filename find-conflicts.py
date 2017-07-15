@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import json,urllib2,time,datetime
 from time import sleep
-config = {"hostname":"127.0.0.1","port":"4984","sgDb":"data","secure":False,"debug":True}
+config = {"hostname":"127.0.0.1","port":"4984","sgDb":"sync_gateway","secure":False,"debug":True}
 
 class WORK():
 
@@ -27,7 +27,18 @@ class WORK():
 		print "hello"
 
 	def httpGet(self,url='',retry=0):
+
+		url = urllib.urlencode(url)
+		print url
+		return url
+		values = { 'username': self.username,'password': self.password }
+		data = urllib.urlencode(values)
+		req = urllib2.Request(url, data)
+		response = urllib2.urlopen(req)
+		result = response.read()
+		return result
 		try:
+
 			r = self.jsonChecker(urllib2.urlopen(url).read())
 			return r
 		except Exception, e:
@@ -175,7 +186,7 @@ class WORK():
 			url = self.secure +'://'+self.hostname+":"+self.port+"/"+self.sgDb+"/"+doc_id+"?rev="+losers[0]["rev"]
 			if self.debug == True:
 				print "DEBUG: Doc To Delete: "+url
-			sleep(0.02)
+			#sleep(0.02)
 			return self.httpDelete(url) 
 		
 		elif losers.__len__() > 1: # if two or more loser do bulk_docs i.e.(POST)
@@ -194,7 +205,7 @@ class WORK():
 				print "DEBUG: Bulk Docs Url: "+url
 				#print "DEBUG: Bulk Docs Data: "+ data
 			#sleep(0.05)
-			self.httpPost(url,data)
+			return self.httpPost(url,data)
 
 		
 	#------END OF CLASS WORK -------#
@@ -202,7 +213,7 @@ class WORK():
 if __name__ == "__main__":
 	a = WORK(config)
 
-	chkPtData = a.getLocalChkpt() #get a checkpoint
+	chkPtData = a.getLocalChkpt() #get the checkpoint 
 
 	if chkPtData == False:
 		print "Error: I think SG is down"
@@ -216,9 +227,9 @@ if __name__ == "__main__":
 		chkPtAlready = True #start Changes feed from checkpoint
 		feedData = a.getChangesFeed(chkPtData["seq"])
 		
-	newSeqNum = str(feedData["last_seq"]) #latest sequence number from Sync Gateway
+	newSeqNum = str(feedData["last_seq"]) #get the latest sequence number from Sync Gateway _changes feed
 
-	if chkPtAlready == True and chkPtData["seq"] == newSeqNum:#check to see if there is any changes. If not Return
+	if chkPtAlready == True and chkPtData["seq"] == newSeqNum:#check to see if there is any changes. If not quit
 		print 'No changes in sequence since last checkpoint , seq: ' + chkPtData["seq"] + " at " + chkPtData["dt"]
 		quit()
 
@@ -231,12 +242,12 @@ if __name__ == "__main__":
 	
 	newChkPtDt = str(datetime.datetime.now())
 	
-	if chkPtAlready == True: #if there is a checkpoint alread I need to get _rev of it.
+	if chkPtAlready == True: #if there is a checkpoint already I need to get _rev of it.
 		revChkpt = chkPtData["_rev"]
 		chkPtData["dt"] = newChkPtDt
 		chkPtData["seq"] = newSeqNum
 	else:
-		chkPtData={"dt":newChkPtDt,"seq":newSeqNum}
+		chkPtData={"dt":newChkPtDt,"seq":newSeqNum} #first time making checkpoint
 
 	a.putLocalChkpt(chkPtData,revChkpt) # set checkpoint
 	print "Any conflicts resolved at:", datetime.datetime.now()
