@@ -1,22 +1,29 @@
 #!/usr/bin/python
-import json,urllib2,time,datetime
+import json
+import urllib2
+import time
+import datetime
+import sys
 from time import sleep
-config = {"hostname":"127.0.0.1","port":"4984","sgDb":"sync_gateway","secure":False,"debug":True}
+
+config = {"hostname":"127.0.0.1","port":"4985","sgDb":"sync_gateway","secure":False,"debug":True}
 
 class WORK():
 
 	hostname = '127.0.0.1'
 	port = '4985'
-	sgDb = 'db'
+	sgDb = 'sync_gateway'
 	debug = False
 	secure = "http"
-	chkpt ='fujio'
+	chkpt ='defaultChkPtNameChangeMe'
 
 	def __init__(self,config):
 		self.hostname = config["hostname"]
 		self.port = config["port"]
 		self.sgDb = config["sgDb"]
 		self.debug = config["debug"]
+		if config["chkPt"] != "":
+			self.chkpt = config["chkPt"]
 		if config["secure"] == True:
 			self.secure = "https"
 		else:
@@ -28,15 +35,15 @@ class WORK():
 
 	def httpGet(self,url='',retry=0):
 
-		url = urllib.urlencode(url)
-		print url
-		return url
-		values = { 'username': self.username,'password': self.password }
-		data = urllib.urlencode(values)
-		req = urllib2.Request(url, data)
-		response = urllib2.urlopen(req)
-		result = response.read()
-		return result
+		'''
+		#url = urllib.urlencode(url)
+		#values = { 'username': self.username,'password': self.password }
+		#data = urllib.urlencode(values)
+		#req = urllib2.Request(url, data)
+		#response = urllib2.urlopen(req)
+		#result = response.read()
+		'''
+
 		try:
 
 			r = self.jsonChecker(urllib2.urlopen(url).read())
@@ -211,6 +218,9 @@ class WORK():
 	#------END OF CLASS WORK -------#
 
 if __name__ == "__main__":
+	
+	config["chkPt"] = str(sys.argv[1]) 
+	
 	a = WORK(config)
 
 	chkPtData = a.getLocalChkpt() #get the checkpoint 

@@ -3,8 +3,9 @@ A simple conflict resolver for Sync Gateway
 
 
 Insert into your cron tab 
+put hostname of the SG machine at the end.
 ```
-* * * * * /usr/bin/python /path/to/sg-find-conflict-demo/sg-find-conflict.py
+* * * * * /usr/bin/python /path/to/sg-find-conflict-demo/find-conflict.py 8.8.8.8
 ```
 
 **FAQ**
@@ -28,7 +29,7 @@ Q:Can I change the logic to pick a specific winner?
 
 A:Yes, you'll have to change the script to your needs. 
 
-Just put in your logic here on line 164 in find-conflicts.py
+Just put in your logic here on line 184 in find-conflicts.py
 ```
 	def findConflict(self,data_json = []):
 		doc_id = data_json["id"]
