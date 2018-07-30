@@ -1,0 +1,29 @@
+SELECT
+META().id as CBKEY,
+ARRAY_COUNT(ARRAY_DISTINCT(_sync.history.parents)) as d,
+ARRAY_COUNT(_sync.history.parents) as c,
+_sync.history.bodymap
+FROM `bucket` WHERE
+_sync is not missing AND 
+ARRAY_COUNT(ARRAY_DISTINCT(_sync.history.parents)) != ARRAY_COUNT(_sync.history.parents)
+
+
+WITH XATTR
+
+SELECT
+META().id as CBKEY,
+ARRAY_COUNT(ARRAY_DISTINCT(META().xattr._sync.history.parents)) as d,
+ARRAY_COUNT(META().xattr._sync.history.parents) as c,
+META().xattr._sync.history.bodymap
+FROM `bucket` WHERE
+META().xattr._sync is not missing AND 
+ARRAY_COUNT(ARRAY_DISTINCT(META().xattr._sync.history.parents)) != ARRAY_COUNT(META().xattr._sync.history.parents)
+
+
+The above queries will show documents that have multiple branches. Some of documents might have all their branches resolved. i.e. deleted.
+
+EXAMPLE
+"bodymap": {
+        "3": "{\"_deleted\":true}",
+        "4": "{\"_deleted\":true}"
+	}
