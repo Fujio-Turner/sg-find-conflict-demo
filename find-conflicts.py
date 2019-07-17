@@ -31,7 +31,7 @@ class WORK():
 
 	##--------Common Methods BEGIN---------##
 	def sayHelloTest(self):
-		print "hello"
+		print("hello")
 
 	def httpGet(self,url='',retry=0):
 
@@ -51,14 +51,14 @@ class WORK():
 		except Exception, e:
 			if e:
 				if hasattr(e, 'code'):
-					print "Error: HTTP GET: " + str(e.code)
+					print("Error: HTTP GET: " + str(e.code))
 			if retry == 3:
 				if self.debug == True:
-					print "DEBUG: Tried 3 times could not execute: GET"				
+					print("DEBUG: Tried 3 times could not execute: GET")				
 				if e:
 					if hasattr(e, 'code'):
 						if self.debug == True:
-							print "DEBUG: HTTP CODE ON: GET - "+ str(e.code)	
+							print("DEBUG: HTTP CODE ON: GET - "+ str(e.code))	
 						return e.code
 					else:
 						return False
@@ -75,14 +75,14 @@ class WORK():
 		except Exception, e:
 			if e:
 				if hasattr(e, 'code'):
-					print "Error: HTTP PUT: " + str(e.code)
+					print("Error: HTTP PUT: " + str(e.code))
 			if retry == 3:
 				if self.debug == True:
-					print "DEBUG: Tried 3 times could not execute: PUT"				
+					print("DEBUG: Tried 3 times could not execute: PUT")				
 				if e:
 					if hasattr(e, 'code'):
 						if self.debug == True:
-							print "DEBUG: HTTP CODE ON: PUT - "+ str(e.code)	
+							print("DEBUG: HTTP CODE ON: PUT - "+ str(e.code))	
 						return e.code
 					else:
 						return False
@@ -99,14 +99,14 @@ class WORK():
 		except Exception, e:
 			if e:
 				if hasattr(e, 'code'):
-					print "Error: HTTP POST: " + str(e.code)
+					print("Error: HTTP POST: " + str(e.code))
 			if retry == 3:
 				if self.debug == True:
-					print "DEBUG: Tried 3 times could not execute: POST"				
+					print("DEBUG: Tried 3 times could not execute: POST")				
 				if e:
 					if hasattr(e, 'code'):
 						if self.debug == True:
-							print "DEBUG: HTTP CODE ON: POST - "+ str(e.code)	
+							print("DEBUG: HTTP CODE ON: POST - "+ str(e.code))	
 						return e.code
 					else:
 						return False
@@ -122,14 +122,14 @@ class WORK():
 		except Exception, e:
 			if e:
 				if hasattr(e, 'code'):
-					print "Error: HTTP DELETE: " + str(e.code)
+					print("Error: HTTP DELETE: " + str(e.code))
 			if retry == 3:
 				if self.debug == True:
-					print "DEBUG: Tried 3 times could not execute: DELETE"				
+					print("DEBUG: Tried 3 times could not execute: DELETE")				
 				if e:
 					if hasattr(e, 'code'):
 						if self.debug == True:
-							print "DEBUG: HTTP CODE ON: DELETE - "+ str(e.code)
+							print("DEBUG: HTTP CODE ON: DELETE - "+ str(e.code))
 						return e.code
 					else:
 						return False
@@ -149,7 +149,7 @@ class WORK():
 	def getLocalChkpt(self):
 		url = self.secure +'://'+self.hostname+":"+self.port+"/"+self.sgDb+"/_local/PULL::Conflict::"+self.chkpt
 		if self.debug == True:  
-			print "DEBUG: CheckPointGET: "+url
+			print("DEBUG: CheckPointGET: "+url)
 		response = self.httpGet(url)
 		if response == 404:
 			return None
@@ -162,7 +162,7 @@ class WORK():
 		else:
 			url = self.secure +'://'+self.hostname+":"+self.port+"/"+self.sgDb+"/_local/PULL::Conflict::"+self.chkpt+"?rev="+rev_chkPt
 		if self.debug == True:
-			print "DEBUG: CheckPointPUT: "+url
+			print("DEBUG: CheckPointPUT: "+url)
 		response = self.httpPut(url,json.dumps(data))
 		if response == 404 or response == 409:
 			return None
@@ -173,10 +173,10 @@ class WORK():
 		url_param = "?since="+seq+"&active_only=true&style=all_docs"
 		url = self.secure +'://'+self.hostname+":"+self.port+"/"+self.sgDb+"/_changes"+url_param
 		if self.debug == True:
-			print "DEBUG: ChangesFeedUrl: "+url		
+			print("DEBUG: ChangesFeedUrl: "+url)		
 		response = self.httpGet(url)
 		if self.debug == True:
-			print "DEBUG: ChangesFeedResponse: "+str(response)
+			print("DEBUG: ChangesFeedResponse: "+str(response))
 		return response
 
 	def findConflict(self,data_json = []):
@@ -185,14 +185,14 @@ class WORK():
 		losers = data_json["changes"][1:]
 
 		if self.debug == True:
-				print "DEBUG: Winner:"+" DocId: "+doc_id+":"+str(winner)
-				print "DEBUG: Losers:"+" DocId: "+doc_id+":"+str(losers)
+				print("DEBUG: Winner:"+" DocId: "+doc_id+":"+str(winner))
+				print("DEBUG: Losers:"+" DocId: "+doc_id+":"+str(losers))
 
 		if losers.__len__() == 1 : # if only one loser just do simple DELETE
 
 			url = self.secure +'://'+self.hostname+":"+self.port+"/"+self.sgDb+"/"+doc_id+"?rev="+losers[0]["rev"]
 			if self.debug == True:
-				print "DEBUG: Doc To Delete: "+url
+				print("DEBUG: Doc To Delete: "+url)
 			#sleep(0.02)
 			return self.httpDelete(url) 
 		
@@ -209,8 +209,8 @@ class WORK():
 				send_json["docs"].append(new_doc)
 			data = json.dumps(send_json)
 			if self.debug == True:
-				print "DEBUG: Bulk Docs Url: "+url
-				#print "DEBUG: Bulk Docs Data: "+ data
+				print("DEBUG: Bulk Docs Url: "+url)
+				#print("DEBUG: Bulk Docs Data: "+ data)
 			#sleep(0.05)
 			return self.httpPost(url,data)
 
@@ -226,7 +226,7 @@ if __name__ == "__main__":
 	chkPtData = a.getLocalChkpt() #get the checkpoint 
 
 	if chkPtData == False:
-		print "Error: I think SG is down"
+		print("Error: I think SG is down")
 		quit()
 
 	chkPtAlready = False
@@ -240,14 +240,14 @@ if __name__ == "__main__":
 	newSeqNum = str(feedData["last_seq"]) #get the latest sequence number from Sync Gateway _changes feed
 
 	if chkPtAlready == True and chkPtData["seq"] == newSeqNum:#check to see if there is any changes. If not quit
-		print 'No changes in sequence since last checkpoint , seq: ' + chkPtData["seq"] + " at " + chkPtData["dt"]
+		print('No changes in sequence since last checkpoint , seq: ' + chkPtData["seq"] + " at " + chkPtData["dt"])
 		quit()
 
 	#loop through results and find conflicts
 	if feedData["results"].__len__() > 0:  
 		for x in feedData["results"]:
 			if x["changes"].__len__() > 1:
-				print "Conflicts on DocId: "+ x["id"]
+				print("Conflicts on DocId: "+ x["id"])
 				a.findConflict(x)
 	
 	newChkPtDt = str(datetime.datetime.now())
