@@ -12,12 +12,12 @@ WITH XATTR
 
 SELECT
 META().id as CBKEY,
-ARRAY_COUNT(ARRAY_DISTINCT(META().xattr._sync.history.parents)) as d,
-ARRAY_COUNT(META().xattr._sync.history.parents) as c,
-META().xattr._sync.history.bodymap
+ARRAY_COUNT(ARRAY_DISTINCT(META().xattrs._sync.history.parents)) as d,
+ARRAY_COUNT(META().xattrs._sync.history.parents) as c,
+META().xattrs._sync.history.bodymap
 FROM `bucket` WHERE
-META().xattr._sync is not missing AND 
-ARRAY_COUNT(ARRAY_DISTINCT(META().xattr._sync.history.parents)) != ARRAY_COUNT(META().xattr._sync.history.parents)
+META().xattrs._sync is not missing AND 
+ARRAY_COUNT(ARRAY_DISTINCT(META().xattrs._sync.history.parents)) != ARRAY_COUNT(META().xattrs._sync.history.parents)
 
 
 The above queries will show documents that have multiple branches. Some of documents might have all their branches resolved. i.e. deleted.
